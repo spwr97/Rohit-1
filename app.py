@@ -18,8 +18,6 @@ def load_data():
 
 data = load_data()
 
-st.map(data)
-
 village_names = list(data.Village.value_counts().index)
 village_names.sort()
 village_names.insert(0, "All villages")
@@ -34,6 +32,8 @@ if st.checkbox("Select Family size", False):
 	data = data[data["Family size"]==fs]
 
 midpoint = (np.average(data["latitude"]), np.average(data["longitude"]))
+
+st.map(data)
 
 st.write(pdk.Deck(
 	map_style="mapbox://styles/mapbox/light-v9",
