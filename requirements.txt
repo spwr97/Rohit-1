@@ -3,3 +3,4 @@ pandas
 plotly
 pydeck
 streamlit==0.69
+awesome_streamlit
