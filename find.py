@@ -4,6 +4,10 @@ import numpy as np
 import pydeck as pdk
 import plotly.express as px
 
+import folium
+from folium.plugins import LocateControl, MarkerCluster
+from streamlit_folium import folium_static
+
 DATA_URL = (
 	"toy_data.csv"
 )
@@ -24,6 +28,9 @@ def write():
 	if village != village_names[0]:
 		data = data[data["Village"] == village]
 
+	if village != village_names[0]:
+		data = data[data["Village"] == village]
+
 	st.header("Locate person by name in: "+village)
 	name_list = list(set(data["Patron"].value_counts().index))
 	name_list.sort()
@@ -31,15 +38,24 @@ def write():
 
 	data = data[data["Patron"]==name]
 
-	fig = px.scatter_mapbox(data,
-	                        lat="latitude", lon="longitude",
-	                        hover_name="Patron", hover_data=["Village"],
-	                        color_discrete_sequence=["fuchsia"], zoom=10, height=500)
-	fig.update_traces(marker_size=10)
-	fig.update_layout(mapbox_style="carto-positron")
-	fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
-	st.write(fig)
+	m = folium.Map(location=[data["latitude"].mean(), data["longitude"].mean()], zoom_start=10)
+
+	for i in range(0,len(data)):
+		name = data.iloc[i]["Patron"]
+		address = data.iloc[i]["Address"]
+		village = data.iloc[i]["Village"]
+		directions = "https://www.google.com/maps/dir//"+str(data.iloc[i]["latitude"])+","+str(data.iloc[i]["longitude"])
+		photo = "https://raw.githubusercontent.com/prabodhw96/Rohit/master/"+data.iloc[i]["Photo"]
+
+		find_html = folium.Html(f"""<p style="text-align: center;">{name}</p>
+									<p style="text-align: center;">{address}</p>
+									<p style="text-align: center;">{village}</p>
+									<p style="text-align: center;"><img src={photo} width="180" height="210" frameborder="0"></img>
+									<p style="text-align: center;"><a href={directions} target="_blank" title="Directions to {name}"><b>Directions to {name}</b></a></p>
+								""", script=True)
+		popup = folium.Popup(find_html, max_width=220)
+		folium.Marker([data.iloc[i]["latitude"], data.iloc[i]["longitude"]], popup=popup).add_to(m)
+	folium_static(m)
 
 	if st.checkbox("Show Raw Data", False):
-	    st.subheader("Raw Data")
-	    st.write(data)
+		st.write(data)
