@@ -8,13 +8,15 @@ import plotly.express as px
 import villages
 import stats
 import find
+import exp
 
 ast.core.services.other.set_logging_format()
 
 PAGES = {
 	"Villages": villages,
 	"Statistics": stats,
-	"Find Person": find
+	"Find Person": find,
+	"Experiment": exp
 }
 
 def main():
