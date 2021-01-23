@@ -4,3 +4,5 @@ plotly
 pydeck
 streamlit==0.69
 awesome_streamlit
+folium
+streamlit_folium
